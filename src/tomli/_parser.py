@@ -2,12 +2,9 @@
 # SPDX-FileCopyrightText: 2021 Taneli Hukkinen
 # Licensed to PSF under a Contributor Agreement.
 
-from __future__ import annotations
-
+from collections import namedtuple
 from collections.abc import Iterable
-import string
-from types import MappingProxyType
-from typing import IO, Any, NamedTuple
+from typing import IO, Any
 
 from ._re import (
     RE_DATETIME,
@@ -33,21 +30,19 @@ ILLEGAL_COMMENT_CHARS = ILLEGAL_BASIC_STR_CHARS
 
 TOML_WS = frozenset(" \t")
 TOML_WS_AND_NEWLINE = TOML_WS | frozenset("\n")
-BARE_KEY_CHARS = frozenset(string.ascii_letters + string.digits + "-_")
+BARE_KEY_CHARS = frozenset('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_')
 KEY_INITIAL_CHARS = BARE_KEY_CHARS | frozenset("\"'")
-HEXDIGIT_CHARS = frozenset(string.hexdigits)
+HEXDIGIT_CHARS = frozenset('0123456789abcdefABCDEF')
 
-BASIC_STR_ESCAPE_REPLACEMENTS = MappingProxyType(
-    {
-        "\\b": "\u0008",  # backspace
-        "\\t": "\u0009",  # tab
-        "\\n": "\u000A",  # linefeed
-        "\\f": "\u000C",  # form feed
-        "\\r": "\u000D",  # carriage return
-        '\\"': "\u0022",  # quote
-        "\\\\": "\u005C",  # backslash
-    }
-)
+BASIC_STR_ESCAPE_REPLACEMENTS = {
+    "\\b": "\u0008",  # backspace
+    "\\t": "\u0009",  # tab
+    "\\n": "\u000A",  # linefeed
+    "\\f": "\u000C",  # form feed
+    "\\r": "\u000D",  # carriage return
+    '\\"': "\u0022",  # quote
+    "\\\\": "\u005C",  # backslash
+}
 
 
 class TOMLDecodeError(ValueError):
@@ -224,9 +219,7 @@ class NestedDict:
             cont[last_key] = [{}]
 
 
-class Output(NamedTuple):
-    data: NestedDict
-    flags: Flags
+Output = namedtuple("Output", ["data", "flags"])
 
 
 def skip_chars(src: str, pos: Pos, chars: Iterable[str]) -> Pos:
