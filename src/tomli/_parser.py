@@ -3,7 +3,6 @@
 # Licensed to PSF under a Contributor Agreement.
 
 from collections import namedtuple
-from collections.abc import Iterable
 
 from ._re import (
     RE_DATETIME,
@@ -13,7 +12,6 @@ from ._re import (
     match_to_localtime,
     match_to_number,
 )
-from ._types import Key, ParseFloat, Pos
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 
@@ -68,7 +66,7 @@ def loads(__s, *, parse_float = float):  # noqa: C901
     src = __s.replace("\r\n", "\n")
     pos = 0
     out = Output(NestedDict(), Flags())
-    header: Key = ()
+    header = ()
     parse_float = make_safe_parse_float(parse_float)
 
     # Parse one statement at a time
@@ -136,8 +134,8 @@ class Flags:
     EXPLICIT_NEST = 1
 
     def __init__(self):
-        self._flags: dict[str, dict] = {}
-        self._pending_flags: set[tuple[Key, int]] = set()
+        self._flags = {}
+        self._pending_flags = set()
 
     def add_pending(self, key, flag):
         self._pending_flags.add((key, flag))
@@ -364,7 +362,7 @@ def parse_key_value_pair(
 
 def parse_key(src, pos):
     pos, key_part = parse_key_part(src, pos)
-    key: Key = (key_part,)
+    key = (key_part,)
     pos = skip_chars(src, pos, TOML_WS)
     while True:
         try:
