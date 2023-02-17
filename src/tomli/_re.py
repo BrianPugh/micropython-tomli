@@ -7,7 +7,6 @@ from __future__ import annotations
 from datetime import date, datetime, time, timedelta, timezone, tzinfo
 from functools import lru_cache
 import re
-from typing import Any
 
 from ._types import ParseFloat
 
@@ -49,7 +48,7 @@ RE_DATETIME = re.compile(
 )
 
 
-def match_to_datetime(match: re.Match) -> datetime | date:
+def match_to_datetime(match):
     """Convert a `RE_DATETIME` match to `datetime.datetime` or `datetime.date`.
 
     Raises ValueError if the match does not correspond to a valid date
@@ -85,7 +84,7 @@ def match_to_datetime(match: re.Match) -> datetime | date:
 
 
 @lru_cache(maxsize=None)
-def cached_tz(hour_str: str, minute_str: str, sign_str: str) -> timezone:
+def cached_tz(hour_str, minute_str, sign_str):
     sign = 1 if sign_str == "+" else -1
     return timezone(
         timedelta(
@@ -95,13 +94,13 @@ def cached_tz(hour_str: str, minute_str: str, sign_str: str) -> timezone:
     )
 
 
-def match_to_localtime(match: re.Match) -> time:
+def match_to_localtime(match):
     hour_str, minute_str, sec_str, micros_str = match.groups()
     micros = int(micros_str.ljust(6, "0")) if micros_str else 0
     return time(int(hour_str), int(minute_str), int(sec_str), micros)
 
 
-def match_to_number(match: re.Match, parse_float: ParseFloat) -> Any:
+def match_to_number(match, parse_float):
     if match.group("floatpart"):
         return parse_float(match.group())
     return int(match.group(), 0)
