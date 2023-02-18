@@ -6,26 +6,14 @@ from datetime import date, datetime, time, timedelta, timezone, tzinfo
 from functools import lru_cache
 import re
 
-# E.g.
-# - 00:32:00.999999
-# - 00:32:00
-_TIME_RE_STR = r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?"
-
 RE_NUMBER = re.compile(
     r"""0(x[0-9A-Fa-f](_?[0-9A-Fa-f])*|b[01](_?[01])*|o[0-7](_?[0-7])*)|[+-]?(0|[1-9](_?[0-9])*)((\.[0-9](_?[0-9])*)?([eE][+-]?[0-9](_?[0-9])*)?)"""
 
 )
-RE_LOCALTIME = re.compile(_TIME_RE_STR)
+RE_LOCALTIME = re.compile(r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?")
 RE_DATETIME = re.compile(
-    rf"""
-([0-9]{{4}})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])  # date, e.g. 1988-10-27
-(?:
-    [Tt ]
-    {_TIME_RE_STR}
-    (?:([Zz])|([+-])([01][0-9]|2[0-3]):([0-5][0-9]))?  # optional time offset
-)?
-""",
-    flags=re.VERBOSE,
+    # Micropython doesn't like the final ``?``
+    r"""([0-9][0-9][0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])([Tt ]([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\.([0-9][0-9]?[0-9]?[0-9]?[0-9]?[0-9]?)[0-9]*)?(([Zz])|([+-])([01][0-9]|2[0-3]):([0-5][0-9]))?)?"""
 )
 
 
@@ -36,17 +24,20 @@ def match_to_datetime(match):
     or datetime.
     """
     (
-        year_str,
-        month_str,
-        day_str,
-        hour_str,
-        minute_str,
-        sec_str,
-        micros_str,
-        zulu_time,
-        offset_sign_str,
-        offset_hour_str,
-        offset_minute_str,
+        year_str,  # 1
+        month_str,  # 2
+        day_str,  # 3
+        _,
+        hour_str,  # 4
+        minute_str,  # 5
+        sec_str,  # 6
+        _,
+        micros_str,  # 7
+        _,
+        zulu_time,  # 8
+        offset_sign_str,  # 9
+        offset_hour_str,  # 10
+        offset_minute_str,  # 11
     ) = match.groups()
     year, month, day = int(year_str), int(month_str), int(day_str)
     if hour_str is None:
