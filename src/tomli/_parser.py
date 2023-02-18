@@ -239,12 +239,12 @@ def skip_until(
     except ValueError:
         new_pos = len(src)
         if error_on_eof:
-            raise suffixed_err(src, new_pos, f"Expected {expect!r}") from None
+            raise suffixed_err(src, new_pos, f"Expected {repr(expect)}") from None
 
     if not error_on.isdisjoint(src[pos:new_pos]):
         while src[pos] not in error_on:
             pos += 1
-        raise suffixed_err(src, pos, f"Found invalid character {src[pos]!r}")
+        raise suffixed_err(src, pos, f"Found invalid character {repr(src[pos])}")
     return new_pos
 
 
@@ -439,7 +439,7 @@ def parse_inline_table(src, pos, parse_float):
         except KeyError:
             raise suffixed_err(src, pos, "Cannot overwrite a value") from None
         if key_stem in nest:
-            raise suffixed_err(src, pos, f"Duplicate inline table key {key_stem!r}")
+            raise suffixed_err(src, pos, f"Duplicate inline table key {repr(key_stem)}")
         nest[key_stem] = value
         pos = skip_chars(src, pos, TOML_WS)
         c = src[pos : pos + 1]
@@ -565,7 +565,7 @@ def parse_basic_str(src, pos, *, multiline):
             start_pos = pos
             continue
         if char in error_on:
-            raise suffixed_err(src, pos, f"Illegal character {char!r}")
+            raise suffixed_err(src, pos, f"Illegal character {repr(char)}")
         pos += 1
 
 
