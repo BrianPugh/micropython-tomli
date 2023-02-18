@@ -1,8 +1,27 @@
 [![Build Status](https://github.com/hukkin/tomli/workflows/Tests/badge.svg?branch=master)](https://github.com/hukkin/tomli/actions?query=workflow%3ATests+branch%3Amaster+event%3Apush)
 [![codecov.io](https://codecov.io/gh/hukkin/tomli/branch/master/graph/badge.svg)](https://codecov.io/gh/hukkin/tomli)
-[![PyPI version](https://img.shields.io/pypi/v/tomli)](https://pypi.org/project/tomli)
 
-# Tomli
+# MicroPython - Tomli
+
+This is a fork of [hukkin/tomli](https://github.com/hukkin/tomli) that is compatible with cpython and micropython.
+Code changes primarily revolve around slight differences in the micropython `re` library, and type annotations.
+
+There are two recommended ways of adding `tomli` to your micropython project:
+
+1. Manually add the `src/tomli` folder to your board's `/lib` directory.
+
+2. Use the [Belay Package Manager](https://belay.readthedocs.io/en/latest/Package%20Manager.html).
+   Simply add the following to your `pyproject.toml`
+   ```
+   [tool.belay.dependencies]
+   tomli = "https://github.com/BrianPugh/micropython-tomli/tree/master/src/tomli"
+   ```
+
+[Datetime](https://github.com/micropython/micropython-lib/tree/master/python-stdlib/datetime) is required for date/time support.
+If you don't need `datetime` support, then you don't need to include the `_re_time.py` file.
+In this case, the `_parser.py` file is standalone and could be renamed to `tomli.py`
+
+The remainder of this README is from the original `tomli` repo.
 
 > A lil' TOML parser
 
