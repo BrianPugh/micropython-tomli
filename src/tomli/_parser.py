@@ -5,6 +5,8 @@
 from collections import namedtuple
 import re
 
+__all__ = ("loads", "load", "TOMLDecodeError")
+
 try:
     from . import _re_time as re_time
 except ImportError:
