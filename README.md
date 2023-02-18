@@ -14,11 +14,12 @@ There are two recommended ways of adding `tomli` to your micropython project:
    Simply add the following to your `pyproject.toml`
    ```
    [tool.belay.dependencies]
-   tomli = "https://github.com/BrianPugh/micropython-tomli/tree/micropython/src/tomli"
+   tomli = "https://github.com/BrianPugh/micropython-tomli/tree/master/src/tomli"
    ```
 
-`datetime` is required for date/time support.
-If you don't need `datetime` support, you don't need to include the `_re_time.py` file.
+[Datetime](https://github.com/micropython/micropython-lib/tree/master/python-stdlib/datetime) is required for date/time support.
+If you don't need `datetime` support, then you don't need to include the `_re_time.py` file.
+In this case, the `_parser.py` file is standalone and could be renamed to `tomli.py`
 
 The remainder of this README is from the original `tomli` repo.
 
