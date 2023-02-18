@@ -1,5 +1,4 @@
 from datetime import date, datetime, time, timedelta, timezone, tzinfo
-from functools import lru_cache
 import re
 
 RE_LOCALTIME = re.compile(r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?")
@@ -67,7 +66,20 @@ def match_to_datetime(ymd_match, time_match, zone_match):
     return datetime(year, month, day, hour, minute, sec, micros, tzinfo=tz)
 
 
-@lru_cache(maxsize=None)
+def lru_cache(func):
+    cache = {}
+
+    def wrapper(*args):
+        if args in cache:
+            return cache[args]
+        result = func(*args)
+        cache[args] = result
+        return result
+
+    return wrapper
+
+
+@lru_cache
 def cached_tz(hour_str, minute_str, sign_str):
     sign = 1 if sign_str == "+" else -1
     return timezone(
