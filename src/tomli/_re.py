@@ -11,34 +11,55 @@ RE_NUMBER = re.compile(
 
 )
 RE_LOCALTIME = re.compile(r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?")
-RE_DATETIME = re.compile(
-    # Currently the last group is too long for micropython (>127 bytes)
-    r"""([\d][\d][\d][\d])-(0[1-9]|1[0-2])-(0[1-9]|[12][\d]|3[01])([Tt ]([01][\d]|2[0-3]):([0-5][\d]):([0-5][\d])(\.([\d][\d]?[\d]?[\d]?[\d]?[\d]?)[\d]*)?(([Zz])|([+-])([01][\d]|2[0-3]):([0-5][\d]))?)?"""
+
+RE_DATETIME_YMD = re.compile(r"""([\d][\d][\d][\d])-(0[1-9]|1[0-2])-(0[1-9]|[12][\d]|3[01])""")
+RE_DATETIME_TIME = re.compile(
+    r"""([Tt ]([01][\d]|2[0-3]):([0-5][\d]):([0-5][\d])(\.([\d][\d]?[\d]?[\d]?[\d]?[\d]?)[\d]*)?)?"""
 )
+RE_DATETIME_ZONE = re.compile(r"(([Zz])|([+-])([01][\d]|2[0-3]):([0-5][\d]))?")
 
 
-def match_to_datetime(match):
+def match_to_datetime(ymd_match, time_match, zone_match):
     """Convert a `RE_DATETIME` match to `datetime.datetime` or `datetime.date`.
 
     Raises ValueError if the match does not correspond to a valid date
     or datetime.
     """
     (
-        year_str,  # 1
-        month_str,  # 2
-        day_str,  # 3
-        _,
-        hour_str,  # 4
-        minute_str,  # 5
-        sec_str,  # 6
-        _,
-        micros_str,  # 7
-        _,
-        zulu_time,  # 8
-        offset_sign_str,  # 9
-        offset_hour_str,  # 10
-        offset_minute_str,  # 11
-    ) = match.groups()
+        year_str,
+        month_str,
+        day_str,
+    ) = ymd_match.groups()
+
+    if time_match:
+        (
+            _,
+            hour_str,
+            minute_str,
+            sec_str,
+            _,
+            micros_str,
+        ) = time_match.groups()
+    else:
+        hour_str = None
+        minute_str = None
+        sec_str = None
+        micros_str = None
+
+    if zone_match:
+        (
+            _,
+            zulu_time,
+            offset_sign_str,
+            offset_hour_str,
+            offset_minute_str,
+        ) = zone_match.groups()
+    else:
+        zulu_time = None
+        offset_sign_str = None
+        offset_hour_str = None
+        offset_minute_str = None
+
     year, month, day = int(year_str), int(month_str), int(day_str)
     if hour_str is None:
         return date(year, month, day)

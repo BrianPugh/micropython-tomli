@@ -5,7 +5,9 @@
 from collections import namedtuple
 
 from ._re import (
-    RE_DATETIME,
+    RE_DATETIME_TIME,
+    RE_DATETIME_YMD,
+    RE_DATETIME_ZONE,
     RE_LOCALTIME,
     RE_NUMBER,
     match_to_datetime,
@@ -610,13 +612,22 @@ def parse_value(  # noqa: C901
         return parse_inline_table(src, pos, parse_float)
 
     # Dates and times
-    datetime_match = RE_DATETIME.match(src, pos)
-    if datetime_match:
+    datetime_ymd_match = RE_DATETIME_YMD.match(src, pos)
+    if datetime_ymd_match:
+        end = datetime_ymd_match.end()
+        datetime_time_match = RE_DATETIME_TIME.match(src, datetime_ymd_match.end())
+        if datetime_time_match:
+            end = datetime_time_match.end()
+            datetime_zone_match = RE_DATETIME_ZONE.match(src, datetime_time_match.end())
+            if datetime_zone_match:
+                end = datetime_zone_match.end()
+        else:
+            datetime_zone_match = None
         try:
-            datetime_obj = match_to_datetime(datetime_match)
+            datetime_obj = match_to_datetime(datetime_ymd_match, datetime_time_match, datetime_zone_match)
         except ValueError as e:
             raise suffixed_err(src, pos, "Invalid date or datetime") from e
-        return datetime_match.end(), datetime_obj
+        return end, datetime_obj
     localtime_match = RE_LOCALTIME.match(src, pos)
     if localtime_match:
         return localtime_match.end(), match_to_localtime(localtime_match)
