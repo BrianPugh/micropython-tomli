@@ -56,7 +56,7 @@ def match_to_datetime(ymd_match, time_match, zone_match):
     hour, minute, sec = int(hour_str), int(minute_str), int(sec_str)
     micros = int(micros_str.ljust(6, "0")) if micros_str else 0
     if offset_sign_str:
-        tz: tzinfo | None = cached_tz(
+        tz = cached_tz(
             offset_hour_str, offset_minute_str, offset_sign_str
         )
     elif zulu_time:

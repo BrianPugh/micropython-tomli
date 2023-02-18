@@ -93,7 +93,7 @@ def loads(__s, *, parse_float = float):  # noqa: C901
             pos = skip_chars(src, pos, TOML_WS)
         elif char == "[":
             try:
-                second_char: str | None = src[pos + 1]
+                second_char = src[pos + 1]
             except IndexError:
                 second_char = None
             out.flags.finalize_pending()
@@ -183,7 +183,7 @@ class Flags:
 class NestedDict:
     def __init__(self):
         # The parsed content of the TOML document
-        self.dict: dict[str, Any] = {}
+        self.dict = {}
 
     def get_or_create_nest(
         self,
@@ -191,7 +191,7 @@ class NestedDict:
         *,
         access_lists = True,
     ):
-        cont: Any = self.dict
+        cont = self.dict
         for k in key:
             if k not in cont:
                 cont[k] = {}
@@ -250,7 +250,7 @@ def skip_until(
 
 def skip_comment(src, pos):
     try:
-        char: str | None = src[pos]
+        char = src[pos]
     except IndexError:
         char = None
     if char == "#":
@@ -347,7 +347,7 @@ def parse_key_value_pair(
 ):
     pos, key = parse_key(src, pos)
     try:
-        char: str | None = src[pos]
+        char = src[pos]
     except IndexError:
         char = None
     if char != "=":
@@ -364,7 +364,7 @@ def parse_key(src, pos):
     pos = skip_chars(src, pos, TOML_WS)
     while True:
         try:
-            char: str | None = src[pos]
+            char = src[pos]
         except IndexError:
             char = None
         if char != ".":
@@ -378,7 +378,7 @@ def parse_key(src, pos):
 
 def parse_key_part(src, pos):
     try:
-        char: str | None = src[pos]
+        char = src[pos]
     except IndexError:
         char = None
     if char in BARE_KEY_CHARS:
@@ -573,7 +573,7 @@ def parse_value(  # noqa: C901
     src, pos, parse_float
 ):
     try:
-        char: str | None = src[pos]
+        char = src[pos]
     except IndexError:
         char = None
 
