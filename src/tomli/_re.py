@@ -12,23 +12,8 @@ import re
 _TIME_RE_STR = r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?"
 
 RE_NUMBER = re.compile(
-    r"""
-0
-(?:
-    x[0-9A-Fa-f](?:_?[0-9A-Fa-f])*   # hex
-    |
-    b[01](?:_?[01])*                 # bin
-    |
-    o[0-7](?:_?[0-7])*               # oct
-)
-|
-[+-]?(?:0|[1-9](?:_?[0-9])*)         # dec, integer part
-(?P<floatpart>
-    (?:\.[0-9](?:_?[0-9])*)?         # optional fractional part
-    (?:[eE][+-]?[0-9](?:_?[0-9])*)?  # optional exponent part
-)
-""",
-    flags=re.VERBOSE,
+    r"""0(x[0-9A-Fa-f](_?[0-9A-Fa-f])*|b[01](_?[01])*|o[0-7](_?[0-7])*)|[+-]?(0|[1-9](_?[0-9])*)((\.[0-9](_?[0-9])*)?([eE][+-]?[0-9](_?[0-9])*)?)"""
+
 )
 RE_LOCALTIME = re.compile(_TIME_RE_STR)
 RE_DATETIME = re.compile(
@@ -97,6 +82,6 @@ def match_to_localtime(match):
 
 
 def match_to_number(match, parse_float):
-    if match.group("floatpart"):
+    if match.group(7):
         return parse_float(match.group())
     return int(match.group(), 0)
