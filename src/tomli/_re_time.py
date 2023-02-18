@@ -1,7 +1,8 @@
 from datetime import date, datetime, time, timedelta, timezone, tzinfo
 import re
 
-RE_LOCALTIME = re.compile(r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?")
+RE_LOCALTIME = re.compile(r"([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(\.(\d\d?\d?\d?\d?\d?)\d*)?")
+
 RE_DATETIME_YMD = re.compile(r"""(\d\d\d\d)-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])""")
 RE_DATETIME_TIME = re.compile(
     r"""([Tt ]([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(\.(\d\d?\d?\d?\d?\d?)\d*)?)?"""
@@ -85,6 +86,6 @@ def match_to_localtime(match):
     hour_str = match.group(1)
     minute_str = match.group(2)
     sec_str = match.group(3)
-    micros_str = match.group(4)
-    micros = int(micros_str.ljust(6, "0")) if micros_str else 0
+    micros_str = match.group(5)
+    micros = int(micros_str + '0' * max(0, 6 - len(micros_str))) if micros_str else 0
     return time(int(hour_str), int(minute_str), int(sec_str), micros)

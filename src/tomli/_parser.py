@@ -634,9 +634,9 @@ def parse_value(  # noqa: C901
             except ValueError as e:
                 raise suffixed_err(src, pos, "Invalid date or datetime") from e
             return pos, datetime_obj
-        localtime_match = re_time.RE_LOCALTIME.match(src, pos)
+        localtime_match = re_time.RE_LOCALTIME.match(src[pos:])
         if localtime_match:
-            return localtime_match.end(), re_time.match_to_localtime(localtime_match)
+            return pos + len(localtime_match.group(0)), re_time.match_to_localtime(localtime_match)
 
     # Integers and "normal" floats.
     # The regex will greedily match any type starting with a decimal
