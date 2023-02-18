@@ -4,16 +4,12 @@
 
 from collections import namedtuple
 
-from ._re import (
-    RE_DATETIME_TIME,
-    RE_DATETIME_YMD,
-    RE_DATETIME_ZONE,
-    RE_LOCALTIME,
-    RE_NUMBER,
-    match_to_datetime,
-    match_to_localtime,
-    match_to_number,
-)
+from ._re_number import RE_NUMBER, match_to_number
+
+try:
+    from . import _re_time as re_time
+except ImportError:
+    re_time = None
 
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 
@@ -612,25 +608,26 @@ def parse_value(  # noqa: C901
         return parse_inline_table(src, pos, parse_float)
 
     # Dates and times
-    datetime_ymd_match = RE_DATETIME_YMD.match(src, pos)
-    if datetime_ymd_match:
-        end = datetime_ymd_match.end()
-        datetime_time_match = RE_DATETIME_TIME.match(src, datetime_ymd_match.end())
-        if datetime_time_match:
-            end = datetime_time_match.end()
-            datetime_zone_match = RE_DATETIME_ZONE.match(src, datetime_time_match.end())
-            if datetime_zone_match:
-                end = datetime_zone_match.end()
-        else:
-            datetime_zone_match = None
-        try:
-            datetime_obj = match_to_datetime(datetime_ymd_match, datetime_time_match, datetime_zone_match)
-        except ValueError as e:
-            raise suffixed_err(src, pos, "Invalid date or datetime") from e
-        return end, datetime_obj
-    localtime_match = RE_LOCALTIME.match(src, pos)
-    if localtime_match:
-        return localtime_match.end(), match_to_localtime(localtime_match)
+    if re_time:
+        datetime_ymd_match = re_time.RE_DATETIME_YMD.match(src, pos)
+        if datetime_ymd_match:
+            end = datetime_ymd_match.end()
+            datetime_time_match = re_time.RE_DATETIME_TIME.match(src, datetime_ymd_match.end())
+            if datetime_time_match:
+                end = datetime_time_match.end()
+                datetime_zone_match = re_time.RE_DATETIME_ZONE.match(src, datetime_time_match.end())
+                if datetime_zone_match:
+                    end = datetime_zone_match.end()
+            else:
+                datetime_zone_match = None
+            try:
+                datetime_obj = re_time.match_to_datetime(datetime_ymd_match, datetime_time_match, datetime_zone_match)
+            except ValueError as e:
+                raise suffixed_err(src, pos, "Invalid date or datetime") from e
+            return end, datetime_obj
+        localtime_match = re_time.RE_LOCALTIME.match(src, pos)
+        if localtime_match:
+            return localtime_match.end(), re_time.match_to_localtime(localtime_match)
 
     # Integers and "normal" floats.
     # The regex will greedily match any type starting with a decimal

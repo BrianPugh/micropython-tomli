@@ -1,17 +1,8 @@
-# SPDX-License-Identifier: MIT
-# SPDX-FileCopyrightText: 2021 Taneli Hukkinen
-# Licensed to PSF under a Contributor Agreement.
-
 from datetime import date, datetime, time, timedelta, timezone, tzinfo
 from functools import lru_cache
 import re
 
-RE_NUMBER = re.compile(
-    r"""0(x[0-9A-Fa-f](_?[0-9A-Fa-f])*|b[01](_?[01])*|o[0-7](_?[0-7])*)|[+-]?(0|[1-9](_?[0-9])*)((\.[0-9](_?[0-9])*)?([eE][+-]?[0-9](_?[0-9])*)?)"""
-
-)
 RE_LOCALTIME = re.compile(r"([01][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(?:\.([0-9]{1,6})[0-9]*)?")
-
 RE_DATETIME_YMD = re.compile(r"""([\d][\d][\d][\d])-(0[1-9]|1[0-2])-(0[1-9]|[12][\d]|3[01])""")
 RE_DATETIME_TIME = re.compile(
     r"""([Tt ]([01][\d]|2[0-3]):([0-5][\d]):([0-5][\d])(\.([\d][\d]?[\d]?[\d]?[\d]?[\d]?)[\d]*)?)?"""
@@ -91,9 +82,3 @@ def match_to_localtime(match):
     hour_str, minute_str, sec_str, micros_str = match.groups()
     micros = int(micros_str.ljust(6, "0")) if micros_str else 0
     return time(int(hour_str), int(minute_str), int(sec_str), micros)
-
-
-def match_to_number(match, parse_float):
-    if match.group(7):
-        return parse_float(match.group())
-    return int(match.group(), 0)
