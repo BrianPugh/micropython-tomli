@@ -609,22 +609,22 @@ def parse_value(  # noqa: C901
 
     # Dates and times
     if re_time:
-        datetime_ymd_match = re_time.RE_DATETIME_YMD.match(src, pos)
+        datetime_ymd_match = re_time.RE_DATETIME_YMD.match(src[pos:])
         if datetime_ymd_match:
-            end = datetime_ymd_match.end()
-            datetime_time_match = re_time.RE_DATETIME_TIME.match(src, datetime_ymd_match.end())
+            pos += len(datetime_ymd_match.group(0))
+            datetime_time_match = re_time.RE_DATETIME_TIME.match(src[pos:])
             if datetime_time_match:
-                end = datetime_time_match.end()
-                datetime_zone_match = re_time.RE_DATETIME_ZONE.match(src, datetime_time_match.end())
+                pos += len(datetime_time_match.group(0))
+                datetime_zone_match = re_time.RE_DATETIME_ZONE.match(src[pos:])
                 if datetime_zone_match:
-                    end = datetime_zone_match.end()
+                    pos += len(datetime_zone_match.group(0))
             else:
                 datetime_zone_match = None
             try:
                 datetime_obj = re_time.match_to_datetime(datetime_ymd_match, datetime_time_match, datetime_zone_match)
             except ValueError as e:
                 raise suffixed_err(src, pos, "Invalid date or datetime") from e
-            return end, datetime_obj
+            return pos, datetime_obj
         localtime_match = re_time.RE_LOCALTIME.match(src, pos)
         if localtime_match:
             return localtime_match.end(), re_time.match_to_localtime(localtime_match)
@@ -632,9 +632,9 @@ def parse_value(  # noqa: C901
     # Integers and "normal" floats.
     # The regex will greedily match any type starting with a decimal
     # char, so needs to be located after handling of dates and times.
-    number_match = RE_NUMBER.match(src, pos)
+    number_match = RE_NUMBER.match(src[pos:])
     if number_match:
-        return number_match.end(), match_to_number(number_match, parse_float)
+        return pos + len(number_match.group(0)), match_to_number(number_match, parse_float)
 
     # Special floats
     first_three = src[pos : pos + 3]
