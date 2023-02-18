@@ -3,14 +3,21 @@
 # Licensed to PSF under a Contributor Agreement.
 
 from collections import namedtuple
-
-from ._re_number import RE_NUMBER, match_to_number
+import re
 
 try:
     from . import _re_time as re_time
 except ImportError:
     re_time = None
 
+RE_NUMBER = re.compile(
+    r"""0(x[0-9A-Fa-f](_?[0-9A-Fa-f])*|b[01](_?[01])*|o[0-7](_?[0-7])*)|[+-]?(0|[1-9](_?[0-9])*)((\.[0-9](_?[0-9])*)?([eE][+-]?[0-9](_?[0-9])*)?)"""
+)
+
+def match_to_number(match, parse_float):
+    if match.group(7):
+        return parse_float(match.group(0))
+    return int(match.group(0), 0)
 ASCII_CTRL = frozenset(chr(i) for i in range(32)) | frozenset(chr(127))
 
 # Neither of these sets include quotation mark or backslash. They are
