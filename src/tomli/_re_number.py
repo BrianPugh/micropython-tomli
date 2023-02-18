@@ -10,5 +10,5 @@ RE_NUMBER = re.compile(
 
 def match_to_number(match, parse_float):
     if match.group(7):
-        return parse_float(match.group())
-    return int(match.group(), 0)
+        return parse_float(match.group(0))
+    return int(match.group(0), 0)

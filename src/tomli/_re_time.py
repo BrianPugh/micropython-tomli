@@ -15,21 +15,15 @@ def match_to_datetime(ymd_match, time_match, zone_match):
     Raises ValueError if the match does not correspond to a valid date
     or datetime.
     """
-    (
-        year_str,
-        month_str,
-        day_str,
-    ) = ymd_match.groups()
+    year_str = ymd_match.group(1)
+    month_str = ymd_match.group(2)
+    day_str = ymd_match.group(3)
 
     if time_match:
-        (
-            _,
-            hour_str,
-            minute_str,
-            sec_str,
-            _,
-            micros_str,
-        ) = time_match.groups()
+        hour_str = time_match.group(2)
+        minute_str = time_match.group(3)
+        sec_str = time_match.group(4)
+        micros_str = time_match.group(6)
     else:
         hour_str = None
         minute_str = None
@@ -37,13 +31,10 @@ def match_to_datetime(ymd_match, time_match, zone_match):
         micros_str = None
 
     if zone_match:
-        (
-            _,
-            zulu_time,
-            offset_sign_str,
-            offset_hour_str,
-            offset_minute_str,
-        ) = zone_match.groups()
+        zulu_time = zone_match.group(2)
+        offset_sign_str = zone_match.group(3)
+        offset_hour_str = zone_match.group(4)
+        offset_minute_str = zone_match.group(5)
     else:
         zulu_time = None
         offset_sign_str = None
@@ -91,6 +82,9 @@ def cached_tz(hour_str, minute_str, sign_str):
 
 
 def match_to_localtime(match):
-    hour_str, minute_str, sec_str, micros_str = match.groups()
+    hour_str = match.group(1)
+    minute_str = match.group(2)
+    sec_str = match.group(3)
+    micros_str = match.group(4)
     micros = int(micros_str.ljust(6, "0")) if micros_str else 0
     return time(int(hour_str), int(minute_str), int(sec_str), micros)
