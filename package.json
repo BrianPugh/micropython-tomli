@@ -1,0 +1,10 @@
+{
+    "urls": [
+      ["tomli/__init__.py", "github:BrianPugh/micropython-tomli/src/tomli/__init__.py"],
+      ["tomli/_parser.py", "github:BrianPugh/micropython-tomli/src/tomli/_parser.py"],
+      ["tomli/_re_time.py", "github:BrianPugh/micropython-tomli/src/tomli/_re_time.py"]
+    ],
+    "deps": [
+    ],
+    "version": "2.0.1"
+}
